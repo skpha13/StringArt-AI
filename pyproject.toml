@@ -1,0 +1,44 @@
+[project]
+
+name = "stringart-ai"
+version = "0.0.1"
+authors = [
+  { name="Adrian Mincu", email="mincu.adrian13@gmail.com" },
+]
+
+description = "StringArt AI is a Python-based package used to generate string art configurations from an input image using different AI methods."
+readme = "README.md"
+
+requires-python = ">=3.12"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+
+dependencies = [
+]
+
+[project.optional-dependencies]
+dev = [
+    'pytest~=8.3',
+    'black~=24.10',
+    'isort~=5.13',
+]
+
+[tool.pytest.ini_options]
+minversion = "8.3"
+addopts = "-ra"
+testpaths = [
+    "tests",
+]
+
+[project.urls]
+Homepage = "https://github.com/skpha13/StringArt-AI"
+Issues = "https://github.com/skpha13/StringArt-AI/issues"
+
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["stringart-ai", "stringart-ai.*"]
