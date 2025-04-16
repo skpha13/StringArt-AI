@@ -16,6 +16,9 @@ classifiers = [
 ]
 
 dependencies = [
+    'stringart @ git+https://github.com/skpha13/Procedural-Computing-of-String-Art.git@main',
+    'scikit-image~=0.25',
+    'numpy~=2.2'
 ]
 
 [project.optional-dependencies]
@@ -41,4 +44,4 @@ requires = ["setuptools", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
-include = ["stringart-ai", "stringart-ai.*"]
+include = ["stringart_ai", "stringart_ai.*"]
