@@ -9,8 +9,7 @@ from skimage.io import imsave
 from skimage.util import img_as_ubyte
 from stringart.solver import Solver
 from stringart.utils.types import CropMode, Rasterization
-from stringart_ai.data_scripts.stringart_sketch_subset import preprocess_image_dimensions
-from stringart_ai.utils.image import load_images
+from stringart_ai.utils.image import load_images, preprocess_image_dimensions
 from tqdm import tqdm
 
 INPUT_DIR = "../../data/sketch"
