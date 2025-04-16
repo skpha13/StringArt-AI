@@ -39,7 +39,7 @@ def save_images(images: np.ndarray, path: str) -> None:
 
 def main():
     images = load_images(INPUT_DIR)
-    images = preprocess_image_dimensions(images, crop_mode=CROP_MODE)
+    images = preprocess_image_dimensions(images, crop_mode=CROP_MODE, new_res=256)
     save_images(images, OUTPUT_DIR_PREPROCESSED)
 
     images_stringart = compute_stringart(images, OUTPUT_DIR_COMPUTED)

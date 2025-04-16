@@ -64,7 +64,7 @@ def process_images():
             continue
 
         image_batch = load_images(filepath)
-        image_batch_preprocessed = preprocess_image_dimensions(image_batch, crop_mode=CROP_MODE)
+        image_batch_preprocessed = preprocess_image_dimensions(image_batch, crop_mode=CROP_MODE, new_res=256)
 
         output_stringart(image_batch_preprocessed, OUTPUT_DIR)
 

@@ -41,19 +41,20 @@ def get_shortest_side(images: List[np.ndarray]) -> int:
     return shortest_side
 
 
-def filter_images_by_minsize(images: List[np.ndarray], minsize: int = 220) -> List[np.ndarray]:
+def filter_images_by_minsize(images: List[np.ndarray], minsize: int = 256) -> List[np.ndarray]:
     filtered = [img for img in images if img.shape[0] >= minsize and img.shape[1] >= minsize]
 
     return filtered
 
 
-def preprocess_image_dimensions(images: List[np.ndarray], crop_mode: CropMode = "first-half") -> np.ndarray:
+def preprocess_image_dimensions(
+    images: List[np.ndarray], crop_mode: CropMode = "first-half", new_res: int = 256
+) -> np.ndarray:
     rbg2gray_inplace(images)
-    images = filter_images_by_minsize(images, 220)
-    shortest_side = get_shortest_side(images)
+    images = filter_images_by_minsize(images, new_res)
 
     for index in range(len(images)):
-        new_height, new_width = calculate_aspect_preserved_size(images[index], shortest_side)
+        new_height, new_width = calculate_aspect_preserved_size(images[index], new_res)
         temp_image = resize(images[index], (new_height, new_width))
         images[index] = crop_image(temp_image, crop_mode)
 
