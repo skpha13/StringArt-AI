@@ -18,7 +18,9 @@ classifiers = [
 dependencies = [
     'stringart @ git+https://github.com/skpha13/Procedural-Computing-of-String-Art.git@main',
     'scikit-image~=0.25',
-    'numpy~=2.2'
+    'numpy~=2.2',
+    'pandas~=2.2',
+    'tqdm~=4.67',
 ]
 
 [project.optional-dependencies]

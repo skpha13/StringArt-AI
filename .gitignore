@@ -174,3 +174,4 @@ cython_debug/
 .pypirc
 
 /data/sketch/
+/data/stringart-dataset/
