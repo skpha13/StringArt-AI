@@ -9,13 +9,18 @@ authors = [
 description = "StringArt AI is a Python-based package used to generate string art configurations from an input image using different AI methods."
 readme = "README.md"
 
-requires-python = ">=3.12"
+requires-python = ">=3.10"
 classifiers = [
     "Programming Language :: Python :: 3",
     "Operating System :: OS Independent",
 ]
 
 dependencies = [
+    'stringart @ git+https://github.com/skpha13/Procedural-Computing-of-String-Art.git@main',
+    'scikit-image~=0.25',
+    'numpy~=2.2',
+    'pandas~=2.2',
+    'tqdm~=4.67',
 ]
 
 [project.optional-dependencies]
@@ -41,4 +46,4 @@ requires = ["setuptools", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
-include = ["stringart-ai", "stringart-ai.*"]
+include = ["stringart_ai", "stringart_ai.*"]
