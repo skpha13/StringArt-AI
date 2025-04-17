@@ -47,8 +47,8 @@ def main():
     validation_data, test_data = train_test_split(temp_data, test_size=0.5, random_state=42)
 
     train_loader = DataLoader(StringArtDataset(train_data), batch_size=64, shuffle=True)
-    validation_loader = DataLoader(StringArtDataset(validation_data), batch_size=64, shuffle=True)
-    test_loader = DataLoader(StringArtDataset(test_data), batch_size=64, shuffle=True)
+    validation_loader = DataLoader(StringArtDataset(validation_data), batch_size=64, shuffle=False)
+    test_loader = DataLoader(StringArtDataset(test_data), batch_size=64, shuffle=False)
 
     batch = next(iter(train_loader))
     img, label = batch[0][0], batch[1][0]
