@@ -46,6 +46,9 @@ def output_stringart(images: np.ndarray, path: str) -> None:
     with ProcessPoolExecutor() as executor:
         results = list(executor.map(process_single_image, indexed_images))
 
+    # kaggle version
+    # results = [process_single_image(args) for args in indexed_images]
+
     IDX += len(images)
 
     df = pd.concat([df, pd.DataFrame(results, columns=["image", "label"])], ignore_index=True)

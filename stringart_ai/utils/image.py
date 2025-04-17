@@ -12,6 +12,22 @@ from stringart.utils.types import CropMode
 
 
 def calculate_aspect_preserved_size(image: np.ndarray, target_short_side_length: int) -> Tuple[int, int]:
+    """Calculates new image dimensions preserving the aspect ratio
+    based on the given target length for the shorter side.
+
+    Parameters
+    ----------
+    image : np.ndarray
+        The input image.
+    target_short_side_length : int
+        The desired size for the shorter side of the image.
+
+    Returns
+    -------
+    Tuple[int, int]
+        The new height and width of the image with preserved aspect ratio.
+    """
+
     height, width = image.shape
 
     if height < width:
@@ -27,12 +43,33 @@ def calculate_aspect_preserved_size(image: np.ndarray, target_short_side_length:
 
 
 def rbg2gray_inplace(images: List[np.ndarray]) -> None:
+    """Converts RGB images in a list to grayscale in-place.
+
+    Parameters
+    ----------
+    images : List[np.ndarray]
+        List of images. Each image can be either grayscale or RGB.
+    """
+
     for index in range(len(images)):
         if len(images[index].shape) > 2:
             images[index] = rgb2gray(images[index])
 
 
 def get_shortest_side(images: List[np.ndarray]) -> int:
+    """Finds the shortest side (height or width) among a list of images.
+
+    Parameters
+    ----------
+    images : List[np.ndarray]
+        List of image arrays.
+
+    Returns
+    -------
+    int
+        The length of the shortest side across all images.
+    """
+
     shortest_side = 2**30
     for image in images:
         shape = image.shape
@@ -42,6 +79,22 @@ def get_shortest_side(images: List[np.ndarray]) -> int:
 
 
 def filter_images_by_minsize(images: List[np.ndarray], minsize: int = 256) -> List[np.ndarray]:
+    """Filters out images that are smaller than the specified minimum size
+    in either dimension.
+
+    Parameters
+    ----------
+    images : List[np.ndarray]
+        List of image arrays.
+    minsize : int, optional
+        Minimum allowed size for both dimensions (default is 256).
+
+    Returns
+    -------
+    List[np.ndarray]
+        Filtered list of images meeting the size requirement.
+    """
+
     filtered = [img for img in images if img.shape[0] >= minsize and img.shape[1] >= minsize]
 
     return filtered
@@ -50,6 +103,24 @@ def filter_images_by_minsize(images: List[np.ndarray], minsize: int = 256) -> Li
 def preprocess_image_dimensions(
     images: List[np.ndarray], crop_mode: CropMode = "first-half", new_res: int = 256
 ) -> np.ndarray:
+    """Preprocesses a list of images: converts to grayscale, filters by size,
+    resizes preserving aspect ratio, and crops. Resulting images will all have the same size.
+
+    Parameters
+    ----------
+    images : List[np.ndarray]
+        List of image arrays to preprocess.
+    crop_mode : CropMode, optional
+        Cropping mode to use during cropping (default is "first-half").
+    new_res : int, optional
+        Target resolution for the shorter side (default is 256).
+
+    Returns
+    -------
+    np.ndarray
+        Array of preprocessed images.
+    """
+
     rbg2gray_inplace(images)
     images = filter_images_by_minsize(images, new_res)
 
@@ -62,6 +133,19 @@ def preprocess_image_dimensions(
 
 
 def load_images(input_dir: str) -> List[np.ndarray]:
+    """Loads and inverts images from a specified directory.
+
+    Parameters
+    ----------
+    input_dir : str
+        Path to the directory containing image files.
+
+    Returns
+    -------
+    List[np.ndarray]
+        List of loaded and inverted images as float64 arrays.
+    """
+
     image_extensions = (".png", ".jpg", ".jpeg")
     images: List[np.ndarray] = []
 
