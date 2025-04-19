@@ -6,11 +6,8 @@ from skimage.io import imsave
 from skimage.util import img_as_ubyte
 from stringart.solver import Solver
 from stringart.utils.types import CropMode, Rasterization
+from stringart_ai.config import Config
 from stringart_ai.utils.image import load_images, preprocess_image_dimensions
-
-INPUT_DIR = "../../data/sketch-subset"
-OUTPUT_DIR_COMPUTED = "../../data/sketch-subset-computed"
-OUTPUT_DIR_PREPROCESSED = "../../data/sketch-subset-scaled"
 
 CROP_MODE: CropMode = "first-half"
 NUMBER_OF_PEGS: int = 100
@@ -38,11 +35,11 @@ def save_images(images: np.ndarray, path: str) -> None:
 
 
 def main():
-    images = load_images(INPUT_DIR)
+    images = load_images(Config.IMAGENET_SKETCH_SUBSET_DIR)
     images = preprocess_image_dimensions(images, crop_mode=CROP_MODE, new_res=256)
-    save_images(images, OUTPUT_DIR_PREPROCESSED)
+    save_images(images, Config.PREPROCESSED_OUTPUT_DIR)
 
-    images_stringart = compute_stringart(images, OUTPUT_DIR_COMPUTED)
+    images_stringart = compute_stringart(images, Config.IMAGENET_SKETCH_SUBSET_COMPUTED_DIR)
 
 
 if __name__ == "__main__":
