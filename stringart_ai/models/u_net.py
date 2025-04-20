@@ -1,7 +1,4 @@
-from typing import Tuple
-
 import torch
-import torch.nn.functional as F
 from stringart_ai.config import Config
 from stringart_ai.data_scripts.data_loader import load_data
 from stringart_ai.models.trainer import plot_loss, plot_test_results, train
@@ -25,18 +22,9 @@ class DoubleConv2d(nn.Module):
         return self.double_conv2d(x)
 
 
-def crop_tensor(tensor, target_tensor):
-    """
-    Crops the tensor to match the target tensor's spatial size.
-    """
-    _, _, h, w = target_tensor.shape
-    return tensor[:, :, :h, :w]
-
-
 class UNet(nn.Module):
-    def __init__(self, in_channels, out_channels, size: Tuple[int, int]):
+    def __init__(self, in_channels, out_channels):
         super(UNet, self).__init__()
-        self.size = size
 
         self.encoder = nn.ModuleList(
             [
@@ -81,14 +69,8 @@ class UNet(nn.Module):
             encoder_output = stk.pop(-1)
             x = self.deconv[index](x)
 
-            # match dimensions
-            encoder_output = crop_tensor(encoder_output, x)
-
             x = torch.cat([encoder_output, x], dim=1)
             x = self.decoder[index](x)
-
-        # output comes as 240x240, need to bring it back to 252
-        x = F.interpolate(x, size=self.size, mode="bilinear", align_corners=False)
 
         return self.last_layer_conv(x)
 
@@ -96,7 +78,7 @@ class UNet(nn.Module):
 if __name__ == "__main__":
     train_loader, validation_loader, test_loader = load_data(Config.DATASET_DIR, batch_size=16)
 
-    model = UNet(1, 1, (252, 252))
+    model = UNet(1, 1)
     loss_fn = nn.MSELoss()
 
     optimizer = optim.AdamW(model.parameters(), lr=1e-4)
@@ -108,7 +90,7 @@ if __name__ == "__main__":
         validation_loader,
         loss_fn,
         optimizer,
-        300,
+        150,
         torch.device("cuda"),
     )
 
