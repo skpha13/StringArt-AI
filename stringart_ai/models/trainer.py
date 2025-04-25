@@ -1,10 +1,22 @@
+import os
+
 import matplotlib.pyplot as plt
 import torch
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 
 
-def train(model, train_loader: DataLoader, val_loader: DataLoader, criterion, optimizer, epochs: int, device=None):
+def train(
+    model,
+    train_loader: DataLoader,
+    val_loader: DataLoader,
+    criterion: torch.nn.Module,
+    optimizer: torch.optim.Optimizer,
+    epochs: int,
+    accumulation_steps: int = 4,
+    device: torch.device = None,
+    scheduler=None,
+):
     """Train a PyTorch model and validate it after each epoch.
 
     Parameters
@@ -21,8 +33,12 @@ def train(model, train_loader: DataLoader, val_loader: DataLoader, criterion, op
         The optimizer to update the model's parameters.
     epochs : int
         The number of epochs for training.
+    accumulation_steps : int, optional
+        Number of gradient accumulation steps before performing an optimizer step. Default is 4.
     device : torch.device, optional
         The device on which to run the model (CPU or CUDA). If None, the function will automatically choose the device.
+    scheduler : torch.optim.lr_scheduler optional
+        Learning rate scheduler to adjust the learning rate after each epoch.
 
     Returns
     -------
@@ -48,7 +64,7 @@ def train(model, train_loader: DataLoader, val_loader: DataLoader, criterion, op
         model.train()
         running_train_loss = 0.0
 
-        for inputs, labels in tqdm(train_loader, desc="Training", leave=False):
+        for index, (inputs, labels) in enumerate(tqdm(train_loader, desc="Training", leave=False)):
             inputs, labels = inputs.to(device), labels.to(device)
 
             optimizer.zero_grad()
@@ -56,11 +72,14 @@ def train(model, train_loader: DataLoader, val_loader: DataLoader, criterion, op
 
             loss = criterion(outputs, labels)
             loss.backward()
-            optimizer.step()
 
-            running_train_loss += loss.item() * inputs.size(0)
+            if (index + 1) % accumulation_steps == 0 or (index + 1) == len(train_loader):
+                optimizer.step()
+                optimizer.zero_grad()
 
-        epoch_train_loss = running_train_loss / len(train_loader.dataset)
+            running_train_loss += loss.item()
+
+        epoch_train_loss = running_train_loss / len(train_loader)
         train_loss_history.append(epoch_train_loss)
 
         # validation Phase
@@ -81,10 +100,16 @@ def train(model, train_loader: DataLoader, val_loader: DataLoader, criterion, op
         print(f"Train Loss: {epoch_train_loss:.4f}", end=" | ")
         print(f"Val   Loss: {epoch_val_loss:.4f}")
 
+        current_lr = optimizer.param_groups[0]["lr"]
+        print(f"Learning Rate: {current_lr:.8f}")
+
+        if scheduler:
+            scheduler.step()
+
     return train_loss_history, val_loss_history
 
 
-def plot_loss(train_loss, val_loss):
+def plot_loss(train_loss, val_loss, path: str | None = None):
     """Plot the training and validation loss over epochs.
 
     Parameters
@@ -93,6 +118,8 @@ def plot_loss(train_loss, val_loss):
         List of training loss values for each epoch.
     val_loss : list
         List of validation loss values for each epoch.
+    path: str | None
+        Directory path where to save output. Default is None, meaning output will not be saved.
 
     Returns
     -------
@@ -109,10 +136,13 @@ def plot_loss(train_loss, val_loss):
 
     plt.legend()
     plt.grid(True)
+
+    if path is not None:
+        plt.savefig(os.path.join(path, "loss.png"))
     plt.show()
 
 
-def plot_test_results(model, test_loader, device, num_images=5):
+def plot_test_results(model, test_loader, device, num_images=5, path: str | None = None):
     """Plot a set of test results, displaying input images, predicted outputs, and ground truth labels.
 
     Parameters
@@ -125,6 +155,8 @@ def plot_test_results(model, test_loader, device, num_images=5):
        The device on which the model is running (CPU or CUDA).
     num_images : int, optional
        The number of images to display. Default is 5.
+    path: str | None
+        Directory path where to save output. Default is None, meaning output will not be saved.
 
     Returns
     -------
@@ -164,4 +196,7 @@ def plot_test_results(model, test_loader, device, num_images=5):
             axes[i, 2].axis("off")
 
         plt.tight_layout()
+
+        if path is not None:
+            plt.savefig(os.path.join(path, "predictions.png"))
         plt.show()
