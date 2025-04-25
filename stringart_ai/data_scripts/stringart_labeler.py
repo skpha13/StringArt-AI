@@ -9,11 +9,9 @@ from skimage.io import imsave
 from skimage.util import img_as_ubyte
 from stringart.solver import Solver
 from stringart.utils.types import CropMode, Rasterization
+from stringart_ai.config import Config
 from stringart_ai.utils.image import load_images, preprocess_image_dimensions
 from tqdm import tqdm
-
-INPUT_DIR = "../../data/sketch"
-OUTPUT_DIR = "../../data/stringart-dataset"
 
 CROP_MODE: CropMode = "first-half"
 NUMBER_OF_PEGS: int = 100
@@ -55,13 +53,13 @@ def output_stringart(images: np.ndarray, path: str) -> None:
 
 
 def process_images():
-    os.makedirs(os.path.join(OUTPUT_DIR, "images"), exist_ok=True)
-    os.makedirs(os.path.join(OUTPUT_DIR, "labels"), exist_ok=True)
+    os.makedirs(os.path.join(Config.DATASET_DIR, "images"), exist_ok=True)
+    os.makedirs(os.path.join(Config.DATASET_DIR, "labels"), exist_ok=True)
 
-    files = sorted(os.listdir(INPUT_DIR))
+    files = sorted(os.listdir(Config.IMAGENET_SKETCH_DIR))
 
     for file in tqdm(files, desc="Processing Folders"):
-        filepath = os.path.join(INPUT_DIR, file)
+        filepath = os.path.join(Config.IMAGENET_SKETCH_DIR, file)
 
         if not os.path.isdir(filepath):
             continue
@@ -69,7 +67,7 @@ def process_images():
         image_batch = load_images(filepath)
         image_batch_preprocessed = preprocess_image_dimensions(image_batch, crop_mode=CROP_MODE, new_res=256)
 
-        output_stringart(image_batch_preprocessed, OUTPUT_DIR)
+        output_stringart(image_batch_preprocessed, Config.DATASET_DIR)
 
 
 def main():
@@ -79,7 +77,7 @@ def main():
     process_images()
     end_time = time.perf_counter()
 
-    df.to_csv(os.path.join(OUTPUT_DIR, "metadata.csv"), index=False)
+    df.to_csv(os.path.join(Config.DATASET_DIR, "metadata.csv"), index=False)
 
     execution_time = end_time - start_time
     hours = int(execution_time // 3600)

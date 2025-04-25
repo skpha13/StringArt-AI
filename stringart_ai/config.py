@@ -1,0 +1,13 @@
+import os
+
+from dotenv import load_dotenv
+
+load_dotenv()
+
+
+class Config:
+    DATASET_DIR = os.getenv("DATASET_DIR")
+    IMAGENET_SKETCH_DIR = os.getenv("IMAGENET_SKETCH_DIR")
+    IMAGENET_SKETCH_SUBSET_DIR = os.getenv("IMAGENET_SKETCH_SUBSET_DIR")
+    IMAGENET_SKETCH_SUBSET_COMPUTED_DIR = os.getenv("IMAGENET_SKETCH_SUBSET_COMPUTED_DIR")
+    PREPROCESSED_OUTPUT_DIR = os.getenv("PREPROCESSED_OUTPUT_DIR")
