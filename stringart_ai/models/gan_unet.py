@@ -3,7 +3,10 @@ from stringart_ai.config import Config
 from stringart_ai.data_scripts.data_loader import load_data
 from stringart_ai.models.trainer import plot_loss, plot_test_results, train_gan
 from stringart_ai.models.u_net import UNet
+from stringart_ai.utils.loss import SSIMLoss
+from stringart_ai.utils.training_tools import EarlyStopping, ModelCheckpoint
 from torch import nn, optim
+from torch.optim.lr_scheduler import ReduceLROnPlateau
 
 
 class PatchDiscriminator(nn.Module):
@@ -33,10 +36,14 @@ if __name__ == "__main__":
     discriminator = PatchDiscriminator(in_channels=2)
 
     criterion_gan = nn.BCELoss()
-    criterion = nn.L1Loss()
+    criterion = SSIMLoss(data_range=1.0).cuda()
 
     optimizer_generator = optim.Adam(generator.parameters(), lr=1e-4, betas=(0.5, 0.999))
-    optimizer_discriminator = optim.Adam(discriminator.parameters(), lr=1e-4, betas=(0.5, 0.999))
+    optimizer_discriminator = optim.Adam(discriminator.parameters(), lr=1e-9, betas=(0.5, 0.999))
+
+    scheduler_generator = ReduceLROnPlateau(optimizer_generator, mode="min", factor=0.5, patience=10)
+    early_stopping = EarlyStopping(patience=20, verbose=True)
+    model_checkpoint = ModelCheckpoint(save_dir="checkpoints", monitor="val_loss", mode="min", verbose=True)
 
     train_loss_history, validation_loss_history = train_gan(
         generator,
@@ -47,10 +54,15 @@ if __name__ == "__main__":
         criterion,
         optimizer_generator,
         optimizer_discriminator,
-        epochs=25,
-        lambda_loss=100,
+        scheduler_generator,
+        epochs=1000,
+        lambda_loss=50,
         accumulation_steps=4,
+        early_stopping=early_stopping,
+        model_checkpoint=model_checkpoint,
     )
+
+    model_checkpoint.save("./checkpoints/best_gan_checkpoint.pth")
 
     plot_loss(train_loss_history, validation_loss_history)
     plot_test_results(generator, test_loader, device=torch.device("cuda"))
