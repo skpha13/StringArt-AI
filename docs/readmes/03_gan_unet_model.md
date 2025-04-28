@@ -96,3 +96,18 @@ Training was stopped at approximately the 300th epoch by early stopping. Both tr
 ![Predictions](../../plots/gan_1000/best_gan_predictions.png)
 
 The generated predictions closely match those produced by the base U-Net model. Further comparative analysis between the GAN and U-Net outputs needs to be done.
+
+## Comparative Analysis Against U-Net
+
+![Comparative Analysis](../../plots/gan_vs_unet_plot.png)
+> Comparative analysis plot
+
+From the plot, we observe that the SSIM (Structural Similarity Index) values are generally the same between the two models, with a few notable exceptions. For instance, in the first image, the plain U-Net outperforms the GAN significantly (SSIM scores of 0.428 vs. 0.337).
+
+However, when evaluating the Mean Squared Error (MSE), the GAN consistently achieves lower values across most cases, indicating a closer pixel-by-pixel correspondence to the ground truth.
+
+This is further confirmed by the difference maps: the GAN outputs exhibit fewer and less intense bright areas compared to those of the U-Net, suggesting finer reconstruction accuracy.
+
+Another visible advantage is the GAN's ability to better capture circular cropping in images, whereas the U-Net tends to retain more squarish artifacts.
+
+Overall, while the U-Net and GAN predictions might appear similar at a high level, a closer visual inspection reveals that U-Net outputs often display darker black regions. Thus, although quantitative metrics may suggest parity, subjective analysis suggests that the GAN is superior.
