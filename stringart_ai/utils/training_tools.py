@@ -59,11 +59,9 @@ class ModelCheckpoint:
     def update(
         self,
         epoch,
-        generator,
-        discriminator,
-        optimizer_generator,
-        optimizer_discriminator,
-        scheduler_generator,
+        model,
+        optimizer,
+        scheduler,
         current_score,
     ):
         """
@@ -82,11 +80,9 @@ class ModelCheckpoint:
         if is_best:
             self.best_model_data = {
                 "epoch": epoch,
-                "generator_state_dict": generator.state_dict(),
-                "discriminator_state_dict": discriminator.state_dict(),
-                "optimizer_generator_state_dict": optimizer_generator.state_dict(),
-                "optimizer_discriminator_state_dict": optimizer_discriminator.state_dict(),
-                "scheduler_generator_state_dict": scheduler_generator.state_dict(),
+                "model_state_dict": model.state_dict(),
+                "optimizer": optimizer.state_dict(),
+                "scheduler_state_dict": scheduler.state_dict(),
                 self.monitor: current_score,
             }
 
