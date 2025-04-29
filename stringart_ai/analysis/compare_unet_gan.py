@@ -51,11 +51,11 @@ def plot_comparative_analysis(test_images_batch, test_labels_batch, unet_outputs
         gan_pred = gan_outputs[idx].squeeze().numpy()
 
         # Calculate SSIM and MSE
-        ssim_unet = ssim(input_img, unet_pred, data_range=unet_pred.max() - unet_pred.min())
-        ssim_gan = ssim(input_img, gan_pred, data_range=gan_pred.max() - gan_pred.min())
+        ssim_unet = ssim(label_img, unet_pred, data_range=unet_pred.max() - unet_pred.min())
+        ssim_gan = ssim(label_img, gan_pred, data_range=gan_pred.max() - gan_pred.min())
 
-        mse_unet = mean_squared_error(input_img.flatten(), unet_pred.flatten())
-        mse_gan = mean_squared_error(input_img.flatten(), gan_pred.flatten())
+        mse_unet = mean_squared_error(label_img.flatten(), unet_pred.flatten())
+        mse_gan = mean_squared_error(label_img.flatten(), gan_pred.flatten())
 
         # Plot Input Image
         axes[idx, 0].imshow(input_img, cmap="gray")
