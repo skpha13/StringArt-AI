@@ -241,7 +241,7 @@ def train_gan(
             loss_generator = loss_generator / accumulation_steps
             loss_generator.backward()
 
-            if (index + 1) % accumulation_steps == 0:
+            if (index + 1) % accumulation_steps == 0 or (index + 1) == len(train_loader):
                 optimizer_generator.step()
 
             running_train_loss += loss_generator.item()
