@@ -17,6 +17,8 @@ def train(
     accumulation_steps: int = 4,
     device: torch.device = None,
     scheduler=None,
+    early_stopping: EarlyStopping | None = None,
+    model_checkpoint: ModelCheckpoint | None = None,
 ):
     """Train a PyTorch model and validate it after each epoch.
 
@@ -40,6 +42,10 @@ def train(
         The device on which to run the model (CPU or CUDA). If None, the function will automatically choose the device.
     scheduler : torch.optim.lr_scheduler optional
         Learning rate scheduler to adjust the learning rate after each epoch.
+    early_stopping: EarlyStopping, optional
+        Early Stopping method.
+    model_checkpoint: ModelCheckpoint, optional
+        Model Checkpoint save logic.
 
     Returns
     -------
@@ -105,7 +111,17 @@ def train(
         print(f"Learning Rate: {current_lr:.8f}")
 
         if scheduler:
-            scheduler.step()
+            scheduler.step(epoch_val_loss)
+
+        if model_checkpoint is not None:
+            model_checkpoint.update(epoch, model, optimizer, scheduler, current_score=epoch_val_loss)
+
+        if early_stopping is not None:
+            early_stopping(epoch_val_loss)
+
+            if early_stopping.early_stop:
+                print("Early stopping triggered. Stopping training.")
+                break
 
     return train_loss_history, val_loss_history
 
@@ -211,7 +227,7 @@ def train_gan(
             loss_discriminator = loss_discriminator / accumulation_steps
             loss_discriminator.backward()
 
-            if (index + 1) % accumulation_steps == 0:
+            if (index + 1) % accumulation_steps == 0 or (index + 1) == len(train_loader):
                 optimizer_discriminator.step()
 
             # train generator
