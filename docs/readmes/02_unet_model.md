@@ -66,7 +66,9 @@ Using the `piqa` package, a custom SSIM loss function was implemented. Since SSI
 
 ### Learning Rate Scheduler 
 
-A linear learning rate scheduler was used, starting at **1e-4** and linearly decaying to **1e-5** over **300 epochs**.
+A "ReduceLROnPlateau" scheduler was used, with:
+- Factor: 0.5 (halves the learning rate when triggered)
+- Patience: 10 epochs without validation loss improvement.
 
 ### Batch Size and Accumulation Steps
 
